@@ -1,45 +1,33 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+'use strict';
 
-const app = express();
+const { prisma } = require('./db/database.js');
+const app = require('./main');
 const PORT = process.env.PORT || 5000;
 
-// body parsing middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const shutdown = async() => {
+  console.log('Shutting down server...');
 
-app.use(express.static(path.join(__dirname, '../public')));
+  await prisma.$disconnect()
+    .then(() => {
+      console.log('Database connection closed.');
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('Error closing database connection:', err);
+      process.exit(1);
+    });
 
-app.use('/api', require('./api'));
+  app.close(() => {
+    console.log('Server closed.');
+  });
+}
 
-app.get('/hello', (req, res) => {
-  res.json({ message: 'Hello from Express backend!' });
-});
-
-app.get('/*splat', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-}); // Send index.html for any other requests
-
-// error handling middleware
-app.use((err, req, res, next) => {
-  if (process.env.NODE_ENV !== 'test') console.error(err.stack);
-  res.status(err.status || 500).send(err.message || 'Internal server error');
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+process.once('SIGUSR2', async () => {
+  await shutdown();
 });
 
 app.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`),
+    console.log(`studiously serving silly sounds on port http://localhost:${PORT}`)
 );
-module.exports = app;
-
-// const volleyball = require('volleyball')
-
-// // logging middleware
-// // Only use logging middleware when not running tests
-// const debug = process.env.NODE_ENV === 'test'
-// app.use(volleyball.custom({ debug }))
-
-// // static middleware
-
-// app.use('/api', require('./api')) // include our routes!
