@@ -6,11 +6,16 @@ import './Homepage.css';
 
 const Homepage = () => {
   const [message, setMessage] = useState('');
+  const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:1337/hello')
       .then((res) => res.json())
       .then((data) => setMessage(data.message));
+
+    fetch('http://localhost:1337/api/greetings/6')
+      .then((res) => res.json())
+      .then((data) => setGreeting(data.message));
   }, []);
 
   return (
@@ -28,6 +33,7 @@ const Homepage = () => {
           </p>
         </div>
         <p>Message From Server: {message}</p>
+        {greeting.length && <p>{greeting}</p>}
       </section>
 
       <div className="ticks"></div>

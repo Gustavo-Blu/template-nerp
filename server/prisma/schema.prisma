@@ -4,8 +4,8 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider     = "prisma-client-js"
+  output       = "../generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -13,25 +13,27 @@ datasource db {
   provider = "postgresql"
 }
 
-/*
-  * this is how you define your models with Prismadb v7.
-  * after updating models always run `npx prisma generate` to update the generated client.
-  * then `npx prisma migrate dev` to update the database schema
+/**
+ * this is how you define your models with Prismadb v7.
+ * after updating models always run `npx prisma generate` to update the generated client.
+ * then `npx prisma migrate dev` to update the database schema
+ * model Post {
+ * id        Int      @id @default(autoincrement())
+ * title     String
+ * content   String?
+ * published Boolean  @default(false)
+ * authorId  Int
+ * author    User     @relation(fields: [authorId], references: [id])
+ * }
+ * model User {
+ * id    Int    @id @default(autoincrement())
+ * email String @unique
+ * name  String?
+ * posts Post[]
+ * }
+ */
 
-model Post { 
-  id        Int      @id @default(autoincrement()) 
-  title     String
-  content   String?
-  published Boolean  @default(false) 
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id]) 
-} 
-
-model User { 
-  id    Int    @id @default(autoincrement()) 
-  email String @unique
-  name  String?
-  posts Post[]
-} 
-
-*/
+model Greeting {
+  id      Int    @id @default(autoincrement())
+  message String
+}
